@@ -1,5 +1,5 @@
-import { createServer } from "http";   // <-- from Node.js http module
-import { Server } from "socket.io";   // <-- from socket.io
+import { createServer } from "http";   
+import { Server } from "socket.io";   
 
 const httpServer = createServer();
 
@@ -9,10 +9,14 @@ const io = new Server(httpServer, {
   }
 });
 
+const rooms = {}
+
+
+
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
 
-  socket.on("disconnect", () => {
+  socket.on("joinRoom", ({room}) => {
     console.log("A user disconnected:", socket.id);
   });
 });

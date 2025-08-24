@@ -1,21 +1,39 @@
 "use client";
 
+import { useState } from "react";
+import { HeroBackground } from "@/component/HeroBackground";
+import { Button } from "@/component/ui/button";
+
 export default function Home() {
+
+  const [name, setName] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Player Name:", name);
+  };
+
   return (
-    <>
-      <h1 className="text-blue-300 font-serif font-semibold text-4xl text-center mt-10">
-        Housie
-      </h1>
-      <div className="flex justify-center mt-6">
-        <input
-          type="text"
-          placeholder="enter your name"
-          className="bg-white text-black text-center p-3 px-28 rounded-2xl"
-        />
+    <HeroBackground>
+      <div>
+        <h1 className="text-white font-serif font-semibold text-4xl text-center -mt-40">
+          Housie
+        </h1>
+
+        <form onSubmit={handleSubmit} className="flex flex-col items-center">
+          <input
+            name="enter name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="enter your name"
+            className="bg-black text-white text-center my-4 w-64 h-10 text-xl rounded-xl z-10"
+            required
+          />
+
+          <Button className="" onClick={handleSubmit}>Send message</Button>
+        </form>
       </div>
-      <div className="flex mt-10 justify-center">
-        <button className="bg-blue-300 p-3 px-20 font-bold text-2xl rounded-2xl">Play</button>
-      </div>
-    </>
+    </HeroBackground>
   );
 }
