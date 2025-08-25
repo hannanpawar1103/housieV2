@@ -16,9 +16,25 @@ const rooms = {}
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
 
-  socket.on("joinRoom", ({room}) => {
-    console.log("A user disconnected:", socket.id);
-  });
+  socket.on("registerUsername" , (username) => {
+    socket.username = username
+    console.log("username is :" , username)
+  })
+
+  socket.on("chatMessage" , (data) => {
+    const MessageWithUsername = {
+      username : socket.username | "Anonymous",
+      message : data.message
+    }
+
+    io.emit("chatMessage" , MessageWithUsername)
+  })
+
+  socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
+
+
 });
 
 httpServer.listen(3000, () => {
