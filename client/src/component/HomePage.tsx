@@ -2,7 +2,7 @@ import React from 'react'
 import { useState } from 'react';
 import { Button } from "@/component/ui/button";
 
-export const Home = () => {
+export function HomePage() {
 
     const [name, setName] = useState("");
     
