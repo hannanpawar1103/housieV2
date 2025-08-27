@@ -1,42 +1,15 @@
-import { createServer } from "http";   
-import { Server } from "socket.io";   
+import express from "express";
+import http from "http";
+import { Server } from "socket.io";
+import registerSocketHandlers from "./src/socket.js";
 
-const httpServer = createServer();
-
-const io = new Server(httpServer, {
-  cors: {
-    origin: "*",  // configure as needed
-  }
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: { origin: "*" }
 });
 
-const rooms = {}
+// Attach socket logic
+registerSocketHandlers(io);
 
-
-
-io.on("connection", (socket) => {
-  console.log("A user connected:", socket.id);
-
-  socket.on("registerUsername" , (username) => {
-    socket.username = username
-    console.log("username is :" , username)
-  })
-
-  socket.on("chatMessage" , (data) => {
-    const MessageWithUsername = {
-      username : socket.username | "Anonymous",
-      message : data.message
-    }
-
-    io.emit("chatMessage" , MessageWithUsername)
-  })
-
-  socket.on('disconnect', () => {
-        console.log('user disconnected');
-    });
-
-
-});
-
-httpServer.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
-});
+server.listen(3000, () => console.log("Server running on port 3000"));
