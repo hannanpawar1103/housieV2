@@ -39,22 +39,25 @@ const joinRoom = (io, socket, roomCode, name, callback) => {
 
 }
 
-const handleDisconnect = (io, socket, roomCode, name, callback) => {
-    for (const [roomCode, room] of Object.entries(rooms)) {
+const handleDisconnect = (io, socket) => {
+  for (const [roomCode, room] of Object.entries(rooms)) {
     if (room.users[socket.id]) {
-      const userName = room.users[socket.id];
+      const name = room.users[socket.id];
       delete room.users[socket.id];
-      io.to(roomCode).emit("userList", Object.values(room.users));
+      socket.leave(roomCode);
 
-      console.log(`${userName} left room ${roomCode}`);
-
-      if (Object.keys(room.users).length === 0) {
-        delete rooms[roomCode];
-        console.log(`Room ${roomCode} deleted`);
-      }
+      console.log(`${name} left room ${roomCode}`);
+      setTimeout(() => {
+        if (rooms[roomCode] && Object.keys(rooms[roomCode].users).length === 0) {
+          delete rooms[roomCode];
+          console.log(`Room ${roomCode} deleted`);
+        } else {
+          io.to(roomCode).emit("userList", Object.values(rooms[roomCode].users));
+        }
+      }, 3000);
     }
   }
-}
+};
 
 
 export { createRoom, joinRoom , handleDisconnect };

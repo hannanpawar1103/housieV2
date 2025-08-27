@@ -9,22 +9,21 @@ export function HomePage() {
   const [roomCode, setRoomCode] = useState("");
   const router = useRouter();
 
-  const createRoom = () => {
-    socket.connect()
-    socket.emit("createRoom" , {name} ,(res :any) => {
-      if (res.success) {
-        router.push(`/room?code=${res.roomCode}&name=${name}`);
-      } else {
-        alert(res.message);
-      }
-    })
-  }
+ const createRoom = () => {
+  socket.emit("createRoom", { name }, (res: any) => {
+    if (res.success) {
+      router.push(`/room?code=${res.roomCode}&name=${name}`);
+    } else {
+      alert(res.message);
+    }
+  });
+};
 
   const joinRoom = () => {
     socket.connect();
     socket.emit("joinRoom", { roomCode, name }, (res: any) => {
       if (res.success) {
-        router.push(`/room?code=${res.roomCode}&name=${name}`);
+        router.push(`/room?code=${roomCode}&name=${name}`);
       } else {
         alert(res.message);
       }
