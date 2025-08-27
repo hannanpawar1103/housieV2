@@ -1,4 +1,4 @@
-import { roomCodeGenerator } from "../utils/roomCodeGenerator";
+import { roomCodeGenerator } from "../utils/roomCodeGenerator.js";
 
 const rooms = {};
 
