@@ -1,34 +1,36 @@
 "use client";
 import React, { useState, ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import Button from "@/component/ui/button";
-
-
+import socket from "@/utils/socket";
 
 export function HomePage() {
-  const [playerName, setPlayerName] = useState("");
+  const [name, setName] = useState("");
   const [roomCode, setRoomCode] = useState("");
+  const router = useRouter();
 
-  const handleJoinRoom = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    if (!playerName || !roomCode) {
-      // In a real app, use a toast or modal instead of alert()
-      console.error("Please enter your name and a room code to join.");
-      return;
-    }
-    console.log("Attempting to join room...");
-    console.log("Player Name:", playerName);
-    console.log("Room Code:", roomCode);
+  const createRoom = () => {
+    socket.connect()
+    socket.emit("createRoom" , {name} ,(res :any) => {
+      if (res.success) {
+        router.push(`/room?code=${res.roomCode}&name=${name}`);
+      } else {
+        alert(res.message);
+      }
+    })
+  }
+
+  const joinRoom = () => {
+    socket.connect();
+    socket.emit("joinRoom", { roomCode, name }, (res: any) => {
+      if (res.success) {
+        router.push(`/room?code=${res.roomCode}&name=${name}`);
+      } else {
+        alert(res.message);
+      }
+    });
   };
 
-  const handleCreateRoom = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    if (!playerName) {
-      console.error("Please enter your name to create a room.");
-      return;
-    }
-    console.log("Attempting to create a new room...");
-    console.log("Creator Name:", playerName);
-  };
 
   return (
     <div className="-mb-48">
@@ -38,28 +40,22 @@ export function HomePage() {
         </h1>
         <form className="space-y-6">
           <div className="flex flex-col">
-            <label
-              htmlFor="playerName"
-              className="text-gray-300 font-medium"
-            >
+            <label htmlFor="name" className="text-gray-300 font-medium">
               Your Name
             </label>
             <input
-              id="playerName"
-              name="playerName"
+              id="name"
+              name="name"
               type="text"
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="e.g., John Doe"
               className="bg-gray-900 text-white w-full px-4 py-3 text-lg rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
               required
             />
           </div>
           <div className="flex flex-col">
-            <label
-              htmlFor="roomCode"
-              className="text-gray-300 font-medium"
-            >
+            <label htmlFor="roomCode" className="text-gray-300 font-medium">
               Room Code
             </label>
             <input
@@ -76,14 +72,14 @@ export function HomePage() {
           <div className="pt-4 space-y-3">
             <Button
               className="w-full h-12 text-lg font-semibold"
-              onClick={handleJoinRoom}
+              onClick={joinRoom}
             >
               Join Room
             </Button>
             <Button
               variant="outline"
               className="w-full h-12 text-lg font-semibold"
-              onClick={handleCreateRoom}
+              onClick={createRoom}
             >
               Create Room
             </Button>
