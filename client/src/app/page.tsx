@@ -1,6 +1,4 @@
 "use client";
-
-import { useState } from "react";
 import { HeroBackground } from "@/component/HeroBackground";
 import { HomePage } from "@/component/HomePage";
 

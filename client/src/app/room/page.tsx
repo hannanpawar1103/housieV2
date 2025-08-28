@@ -17,7 +17,6 @@ export default function RoomPage() {
 
     if (!socket.connected) {
       socket.connect();
-      // rejoin if user entered directly with URL
       socket.emit("joinRoom", { roomCode, name }, () => {});
     }
 
@@ -32,8 +31,7 @@ export default function RoomPage() {
   }, [roomCode, name]);
 
   useEffect(() => {
-    // 🟢 Listen for incoming messages
-    socket.on("receiveMessage", (data) => {
+    socket.on("receiveMessage", (data : {name : string , message : string}) => {
       setChat((prev) => [...prev, data]);
     });
 
