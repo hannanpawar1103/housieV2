@@ -1,17 +1,13 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import Button from "@/component/ui/button";
 import socket from "@/utils/socket";
-import { data } from "motion/react-client";
 
 export function HomePage() {
   const [name, setName] = useState("");
   const [roomCode, setRoomCode] = useState("");
-  const [message, setMessage] = useState("");
-  const [chat, setChat] = useState<{ name: string; message: string }[]>([]);
-  const params = useSearchParams();
   const router = useRouter();
 
   const createRoom = () => {
