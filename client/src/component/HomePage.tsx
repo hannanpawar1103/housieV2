@@ -9,15 +9,15 @@ export function HomePage() {
   const [roomCode, setRoomCode] = useState("");
   const router = useRouter();
 
- const createRoom = () => {
-  socket.emit("createRoom", { name }, (res: any) => {
-    if (res.success) {
-      router.push(`/room?code=${res.roomCode}&name=${name}`);
-    } else {
-      alert(res.message);
-    }
-  });
-};
+  const createRoom = () => {
+    socket.emit("createRoom", { name }, (res: any) => {
+      if (res.success) {
+        router.push(`/room?code=${res.roomCode}&name=${name}`);
+      } else {
+        alert(res.message);
+      }
+    });
+  };
 
   const joinRoom = () => {
     socket.connect();
@@ -29,7 +29,6 @@ export function HomePage() {
       }
     });
   };
-
 
   return (
     <div className="-mb-48">
@@ -71,14 +70,20 @@ export function HomePage() {
           <div className="pt-4 space-y-3">
             <Button
               className="w-full h-12 text-lg font-semibold"
-              onClick={joinRoom}
+              onClick={(e) => {
+                e.preventDefault();
+                joinRoom();
+              }}
             >
               Join Room
             </Button>
             <Button
               variant="outline"
               className="w-full h-12 text-lg font-semibold"
-              onClick={createRoom}
+              onClick={(e) => {
+                e.preventDefault();
+                createRoom();
+              }}
             >
               Create Room
             </Button>

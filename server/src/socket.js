@@ -14,10 +14,15 @@ const registerSocketHandlers = (io) => {
       joinRoom(io, socket, roomCode, name, callback);
     });
 
+    socket.on("sendMessage", ({ roomCode, name , message }) => {
+      io.to(roomCode).emit('receiveMessage' , {name , message})
+    });
+
     socket.on("disconnect", () => {
       handleDisconnect(io, socket);
     });
   });
 };
+
 
 export default registerSocketHandlers;
