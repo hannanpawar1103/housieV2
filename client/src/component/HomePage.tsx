@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import Button from "@/component/ui/button";
 import socket from "@/utils/socket";
