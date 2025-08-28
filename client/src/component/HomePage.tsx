@@ -4,13 +4,20 @@ import { useRouter } from "next/navigation";
 import Button from "@/component/ui/button";
 import socket from "@/utils/socket";
 
+type RoomResponse = {
+  success: boolean;
+  message?: string;
+  roomCode?: string;
+  players?: string[];
+};
+
 export function HomePage() {
   const [name, setName] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const router = useRouter();
 
   const createRoom = () => {
-    socket.emit("createRoom", { name }, (res: any) => {
+    socket.emit("createRoom", { name }, (res: RoomResponse) => {
       if (res.success) {
         router.push(`/room?code=${res.roomCode}&name=${name}`);
       } else {
@@ -21,7 +28,7 @@ export function HomePage() {
 
   const joinRoom = () => {
     socket.connect();
-    socket.emit("joinRoom", { roomCode, name }, (res: any) => {
+    socket.emit("joinRoom", { roomCode, name }, (res: RoomResponse) => {
       if (res.success) {
         router.push(`/room?code=${roomCode}&name=${name}`);
       } else {
