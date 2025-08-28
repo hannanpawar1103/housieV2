@@ -58,6 +58,7 @@ export default function RoomPage() {
         {users.map((u, i) => (
           <li key={i}>{u}</li>
         ))}
+        
       </ul>
 
       <div className="p-6 max-w-2xl mx-auto">
