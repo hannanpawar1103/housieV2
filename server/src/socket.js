@@ -5,6 +5,7 @@ import {
 } from "./services/roomServices.js";
 
 const registerSocketHandlers = (io) => {
+  
   io.on("connection", (socket) => {
     socket.on("createRoom", ({ name }, callback) => {
       createRoom(io, socket, name, callback);

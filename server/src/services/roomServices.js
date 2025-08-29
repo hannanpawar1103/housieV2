@@ -7,12 +7,18 @@ const createRoom = (io, socket, name, callback) => {
 
   rooms[roomCode] = {
     users: {},
+    ownerId: socket.id,
   };
 
   rooms[roomCode].users[socket.id] = name;
 
   socket.join(roomCode);
   callback({ success: true, roomCode });
+
+  io.to(roomCode).emit("userList", {
+    user: Object.values(rooms[roomCode].users),
+    owner: rooms[roomCode].users[rooms[roomCode].ownerId],
+  });
 
   console.log(`${name} created room ${roomCode}`);
 };
@@ -28,16 +34,18 @@ const joinRoom = (io, socket, roomCode, name, callback) => {
     return callback({ success: false, message: "Name already taken!" });
   }
 
-  room.users[socket.id] = name 
-  socket.join(roomCode)
+  room.users[socket.id] = name;
+  socket.join(roomCode);
 
   callback({ success: true, roomCode });
 
-  io.to(roomCode).emit('userList' , Object.values(room.users))
+  io.to(roomCode).emit("userList", {
+    users: Object.values(room.users),
+    owner: room.users[room.ownerId],
+  });
 
   console.log(`${name} joined room ${roomCode}`);
-
-}
+};
 
 const handleDisconnect = (io, socket) => {
   for (const [roomCode, room] of Object.entries(rooms)) {
@@ -47,17 +55,23 @@ const handleDisconnect = (io, socket) => {
       socket.leave(roomCode);
 
       console.log(`${name} left room ${roomCode}`);
+
       setTimeout(() => {
-        if (rooms[roomCode] && Object.keys(rooms[roomCode].users).length === 0) {
+        if (
+          rooms[roomCode] &&
+          Object.keys(rooms[roomCode].users).length === 0
+        ) {
           delete rooms[roomCode];
           console.log(`Room ${roomCode} deleted`);
         } else {
-          io.to(roomCode).emit("userList", Object.values(rooms[roomCode].users));
+          io.to(roomCode).emit(
+            "userList",
+            Object.values(rooms[roomCode].users)
+          );
         }
       }, 3000);
     }
   }
 };
 
-
-export { createRoom, joinRoom , handleDisconnect };
+export { createRoom, joinRoom, handleDisconnect };
