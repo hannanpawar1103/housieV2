@@ -3,6 +3,10 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import socket from "@/utils/socket";
 
+type UserListPayload = {
+  users: string[];
+};
+
 export default function RoomPage() {
   const searchParams = useSearchParams();
   const roomCode = searchParams.get("code");
@@ -20,8 +24,9 @@ export default function RoomPage() {
       socket.emit("joinRoom", { roomCode, name }, () => {});
     }
 
-    socket.on("userList", (list: string[]) => {
-      setUsers(list);
+    socket.on("userList", ({users}: UserListPayload) => {
+      setUsers(users);
+      // console.log("list : ",list.users[0])
     });
 
     return () => {
@@ -46,6 +51,8 @@ export default function RoomPage() {
       setMessage("");
     }
   };
+
+  console.log("users = ",users)
 
   return (
     <div className="bg-slate-950 flex flex-col items-center justify-center h-screen gap-4">
