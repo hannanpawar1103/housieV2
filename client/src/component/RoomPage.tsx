@@ -55,6 +55,8 @@ export default function RoomPage() {
     }
   };
 
+  
+
   // console.log("users : ", users);
   // console.log("owner : ", roomOwner);
   // console.log("is  : ", roomOwner in users);
@@ -70,7 +72,10 @@ export default function RoomPage() {
 
       <ul className="list-disc">
         {users.map((users, iterations) => (
-          <li key={iterations} className={users === roomOwner ? "text-yellow-200" : "text-white"}>
+          <li
+            key={iterations}
+            className={users === roomOwner ? "text-yellow-200" : "text-white"}
+          >
             {users}
           </li>
         ))}
@@ -92,7 +97,7 @@ export default function RoomPage() {
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="flex-1 px-4 py-2 rounded-l-lg bg-gray-900 text-white border border-gray-600 focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-4 py-2 rounded-l-lg bg-gray-900 text-white border border-gray-600 focus:ring-1 focus:ring-blue-500"
             placeholder="Type your message..."
           />
           <button
@@ -100,6 +105,14 @@ export default function RoomPage() {
             className="px-4 py-2 bg-blue-600 rounded-r-lg text-white font-semibold"
           >
             Send
+          </button>
+        </div>
+        <div className="flex justify-center">
+          <button
+            type="button"
+            className="bg-blue-600 cursor-pointer mt-3 p-3 rounded-xl hover:bg-gray-700 text-white "
+          >
+            start game
           </button>
         </div>
       </div>
