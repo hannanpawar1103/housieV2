@@ -4,8 +4,8 @@ import { useSearchParams } from "next/navigation";
 import socket from "@/utils/socket";
 
 type UserListPayload = {
-  users: string[],
-  owner : string[]
+  users: string[];
+  owner: string;
 };
 
 export default function RoomPage() {
@@ -17,6 +17,8 @@ export default function RoomPage() {
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState<{ name: string; message: string }[]>([]);
 
+  const [roomOwner, setRoomOwner] = useState<string>("");
+
   useEffect(() => {
     if (!roomCode || !name) return;
 
@@ -25,9 +27,9 @@ export default function RoomPage() {
       socket.emit("joinRoom", { roomCode, name }, () => {});
     }
 
-    socket.on("userList", ({users , owner}: UserListPayload) => {
+    socket.on("userList", ({ users, owner }: UserListPayload) => {
       setUsers(users);
-      console.log("owner :" ,owner)
+      setRoomOwner(owner);
     });
 
     return () => {
@@ -37,7 +39,7 @@ export default function RoomPage() {
   }, [roomCode, name]);
 
   useEffect(() => {
-    socket.on("receiveMessage", (data : {name : string , message : string}) => {
+    socket.on("receiveMessage", (data: { name: string; message: string }) => {
       setChat((prev) => [...prev, data]);
     });
 
@@ -53,16 +55,25 @@ export default function RoomPage() {
     }
   };
 
+  // console.log("users : ", users);
+  // console.log("owner : ", roomOwner);
+  // console.log("is  : ", roomOwner in users);
+
+  console.log("is true : ", users[0] === roomOwner);
+
   return (
     <div className="bg-slate-950 flex flex-col items-center justify-center h-screen gap-4">
       <h1 className="text-2xl font-bold">Room Code: {roomCode}</h1>
       <h2 className="text-shadow-orange-50 text-lg font-semibold">Players:</h2>
 
-      <ul className="text-white list-disc">
-        {users.map((u, i) => (
-          <li key={i}>{u}</li>
+      {/* <h1>owner : {roomOwner}</h1> */}
+
+      <ul className="list-disc">
+        {users.map((users, iterations) => (
+          <li key={iterations} className={users === roomOwner ? "text-yellow-200" : "text-white"}>
+            {users}
+          </li>
         ))}
-        
       </ul>
 
       <div className="p-6 max-w-2xl mx-auto">
