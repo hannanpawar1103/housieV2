@@ -55,8 +55,6 @@ export default function RoomPage() {
     }
   };
 
-  
-
   // console.log("users : ", users);
   // console.log("owner : ", roomOwner);
   // console.log("is  : ", roomOwner in users);
@@ -108,12 +106,14 @@ export default function RoomPage() {
           </button>
         </div>
         <div className="flex justify-center">
-          <button
-            type="button"
-            className="bg-blue-600 cursor-pointer mt-3 p-3 rounded-xl hover:bg-gray-700 text-white "
-          >
-            start game
-          </button>
+          {name === roomOwner ? (
+            <button
+              type="button"
+              className="bg-blue-600 cursor-pointer mt-3 p-3 rounded-xl hover:bg-gray-700 text-white "
+            >
+              start game
+            </button>
+          ) : null}
         </div>
       </div>
     </div>
