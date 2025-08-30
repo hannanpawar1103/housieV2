@@ -40,7 +40,7 @@ const joinRoom = (io, socket, roomCode, name, callback) => {
   callback({ success: true, roomCode });
 
   io.to(roomCode).emit("userList", {
-    users: Object.values(room.users),
+    users: Object.values(rooms[roomCode].users),
     owner: room.users[room.ownerId],
   });
 
@@ -63,12 +63,19 @@ const handleDisconnect = (io, socket) => {
         ) {
           delete rooms[roomCode];
           console.log(`Room ${roomCode} deleted`);
-        } else if(rooms[roomCode]){
-          
-          io.to(roomCode).emit(
-            "userList",
-            Object.values(rooms[roomCode].users)
-          );
+        } else if (rooms[roomCode]) {
+          if (room.ownerId === socket.id) {
+            room.ownerId = Object.keys(room.users)[0];
+            console.log(
+              `New owner is assigned ${
+                room.users[room.ownerId]
+              } for room : ${roomCode}`
+            );
+          }
+          io.to(roomCode).emit("userList", {
+            users: Object.values(rooms[roomCode].users),
+            owner: room.users[room.ownerId],
+          });
         }
       }, 3000);
     }

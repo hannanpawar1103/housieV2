@@ -1,6 +1,9 @@
 import { io } from "socket.io-client";
 
-const socket = io("https://housiev2-server.onrender.com", {
+const renderUrl = "https://housiev2-server.onrender.com"
+const localhostUrl = "http://localhost:3000/"
+
+const socket = io(localhostUrl, {
   autoConnect: false,
   transports: ["websocket"],
 });
