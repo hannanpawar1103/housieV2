@@ -16,7 +16,7 @@ const createRoom = (io, socket, name, callback) => {
   callback({ success: true, roomCode });
 
   io.to(roomCode).emit("userList", {
-    user: Object.values(rooms[roomCode].users),
+    users: Object.values(rooms[roomCode].users),
     owner: rooms[roomCode].users[rooms[roomCode].ownerId],
   });
 
@@ -63,7 +63,8 @@ const handleDisconnect = (io, socket) => {
         ) {
           delete rooms[roomCode];
           console.log(`Room ${roomCode} deleted`);
-        } else {
+        } else if(rooms[roomCode]){
+          
           io.to(roomCode).emit(
             "userList",
             Object.values(rooms[roomCode].users)
