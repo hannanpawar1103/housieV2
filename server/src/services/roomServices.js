@@ -20,6 +20,8 @@ const createRoom = (io, socket, name, callback) => {
     owner: rooms[roomCode].users[rooms[roomCode].ownerId],
   });
 
+  // io.to(roomCode).emit("userList", users: Object.values(rooms[roomCode].users), );
+
   console.log(`${name} created room ${roomCode}`);
 };
 
