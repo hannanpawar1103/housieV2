@@ -20,9 +20,10 @@ const createRoom = (io, socket, name, callback) => {
     owner: rooms[roomCode].users[rooms[roomCode].ownerId],
   });
 
+  console.log(`${name} created room ${roomCode}`);
+  
   // io.to(roomCode).emit("userList", users: Object.values(rooms[roomCode].users), );
 
-  console.log(`${name} created room ${roomCode}`);
 };
 
 const joinRoom = (io, socket, roomCode, name, callback) => {

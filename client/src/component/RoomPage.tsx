@@ -4,7 +4,8 @@ import { useSearchParams } from "next/navigation";
 import socket from "@/utils/socket";
 
 type UserListPayload = {
-  users: string[];
+  users: string[],
+  owner : string[]
 };
 
 export default function RoomPage() {
@@ -24,9 +25,9 @@ export default function RoomPage() {
       socket.emit("joinRoom", { roomCode, name }, () => {});
     }
 
-    socket.on("userList", ({users}: UserListPayload) => {
+    socket.on("userList", ({users , owner}: UserListPayload) => {
       setUsers(users);
-      // console.log("list : ",list.users[0])
+      console.log("owner :" ,owner)
     });
 
     return () => {
@@ -51,8 +52,6 @@ export default function RoomPage() {
       setMessage("");
     }
   };
-
-  console.log("users = ",users)
 
   return (
     <div className="bg-slate-950 flex flex-col items-center justify-center h-screen gap-4">
