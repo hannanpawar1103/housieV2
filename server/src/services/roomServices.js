@@ -1,4 +1,5 @@
 import { roomCodeGenerator } from "../utils/roomCodeGenerator.js";
+import { ticketGenerator } from "../utils/ticketGenerator.js";
 
 const rooms = {};
 
@@ -7,6 +8,7 @@ const createRoom = (io, socket, name, callback) => {
 
   rooms[roomCode] = {
     users: {},
+    tickets: {},
     ownerId: socket.id,
   };
 
@@ -20,11 +22,9 @@ const createRoom = (io, socket, name, callback) => {
     owner: rooms[roomCode].users[rooms[roomCode].ownerId],
   });
 
-
   console.log(`${name} created room ${roomCode}`);
 
   // io.to(roomCode).emit("userList", users: Object.values(rooms[roomCode].users), );
-
 };
 
 const joinRoom = (io, socket, roomCode, name, callback) => {
@@ -86,4 +86,23 @@ const handleDisconnect = (io, socket) => {
   }
 };
 
-export { createRoom, joinRoom, handleDisconnect };
+const startGame = (io, roomCode, callback) => {
+  if (!rooms[roomCode]) {
+    return callback({ success: false, message: "room does not exist" });
+  }
+
+  for (const [id, name] of Object.entries(rooms.users)) {
+    const ticket = ticketGenerator();
+    rooms.tickets[id] = ticket;
+    io.to(id).emit("yourTicket", { ticket });
+  }
+
+  io.to(roomCode).emit("gameStarted", { message: "Game has started!" });
+  io.to(roomCode).emit("userList", {
+    users: Object.values(rooms[roomCode].users),
+    owner: rooms[roomCode].users[rooms[roomCode].ownerId],
+  });
+  console.log(`Game started in room ${roomCode}`);
+};
+
+export { createRoom, joinRoom, handleDisconnect, startGame };
