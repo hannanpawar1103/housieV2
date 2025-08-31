@@ -28,6 +28,7 @@ const registerSocketHandlers = (io) => {
     });
 
     socket.on("getTicket",({roomCode , name} , callback) => {
+      console.log(`roomcode = ${roomCode} and name = ${name}`)
       getTicket(io , socket , roomCode , name , callback)
     })
 

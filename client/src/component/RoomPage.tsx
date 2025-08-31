@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import socket from "@/utils/socket";
 import { useRouter } from "next/navigation";
+import { transformWithEsbuild } from "vite";
 
 type UserListPayload = {
   users: string[];
@@ -28,7 +29,16 @@ export default function RoomPage() {
 
   const [roomOwner, setRoomOwner] = useState<string>("");
 
+  const [isOwner, setIsOwner] = useState<boolean>(false);
+  const [redirecting, setRedirecting] = useState<boolean>(false);
+
   const router = useRouter();
+
+  useEffect(() => {
+    if (name === roomOwner) {
+      setIsOwner(true);
+    }
+  });
 
   useEffect(() => {
     if (!roomCode || !name) return;
@@ -70,7 +80,7 @@ export default function RoomPage() {
     console.log(`game start for room ${roomCode}`);
     socket.emit("startGame", { roomCode }, (res: RoomResponse): void => {
       console.log(roomCode);
-      router.push(`/game?code=${roomCode}&name=${name}`);
+      setRedirecting(true);
     });
 
     return () => {
@@ -95,7 +105,7 @@ export default function RoomPage() {
         {users.map((users, iterations) => (
           <li
             key={iterations}
-            className={users === roomOwner ? "text-yellow-200" : "text-white"}
+            className={isOwner ? "text-yellow-200" : "text-white"}
           >
             {users}
           </li>
@@ -121,6 +131,7 @@ export default function RoomPage() {
             className="flex-1 px-4 py-2 rounded-l-lg bg-gray-900 text-white border border-gray-600 focus:ring-1 focus:ring-blue-500"
             placeholder="Type your message..."
           />
+
           <button
             onClick={sendMessage}
             className="px-4 py-2 bg-blue-600 rounded-r-lg text-white font-semibold"
@@ -129,7 +140,7 @@ export default function RoomPage() {
           </button>
         </div>
         <div className="flex justify-center">
-          {name === roomOwner ? (
+          {isOwner ? (
             <button
               onClick={startGame}
               type="button"
@@ -139,6 +150,7 @@ export default function RoomPage() {
             </button>
           ) : null}
         </div>
+        {redirecting ? <div>hello</div> : null}
       </div>
     </div>
   );
