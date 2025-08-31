@@ -7,7 +7,7 @@ import {
 
 const registerSocketHandlers = (io) => {
   io.on("connection", (socket) => {
-    
+
     socket.on("createRoom", ({ name }, callback) => {
       createRoom(io, socket, name, callback);
     });
@@ -21,7 +21,7 @@ const registerSocketHandlers = (io) => {
     });
 
     socket.on("startGame", ({ roomCode }, callback) => {
-      startGame(io, socket, roomCode, callback);
+      startGame(io, roomCode, callback);
     });
 
     socket.on("disconnect", () => {

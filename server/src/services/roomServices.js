@@ -91,18 +91,23 @@ const startGame = (io, roomCode, callback) => {
     return callback({ success: false, message: "room does not exist" });
   }
 
-  for (const [id, name] of Object.entries(rooms.users)) {
+  rooms[roomCode].ticket = {}
+
+  for (const [id, name] of Object.entries(rooms[roomCode].users)) {
     const ticket = ticketGenerator();
-    rooms.tickets[id] = ticket;
+    rooms[roomCode].tickets[id] = ticket;
     io.to(id).emit("yourTicket", { ticket });
   }
 
   io.to(roomCode).emit("gameStarted", { message: "Game has started!" });
+
   io.to(roomCode).emit("userList", {
     users: Object.values(rooms[roomCode].users),
     owner: rooms[roomCode].users[rooms[roomCode].ownerId],
   });
+  
   console.log(`Game started in room ${roomCode}`);
+  callback({ success: true, message: "Game started" });
 };
 
 export { createRoom, joinRoom, handleDisconnect, startGame };

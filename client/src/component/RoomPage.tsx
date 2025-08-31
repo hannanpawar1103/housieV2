@@ -2,10 +2,19 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import socket from "@/utils/socket";
+import { useRouter } from "next/router";
 
 type UserListPayload = {
   users: string[];
   owner: string;
+  ticket : number[]
+};
+
+type RoomResponse = {
+  success: boolean;
+  message?: string;
+  roomCode?: string;
+  players?: string[];
 };
 
 export default function RoomPage() {
@@ -18,6 +27,8 @@ export default function RoomPage() {
   const [chat, setChat] = useState<{ name: string; message: string }[]>([]);
 
   const [roomOwner, setRoomOwner] = useState<string>("");
+
+  const router = useRouter()
 
   useEffect(() => {
     if (!roomCode || !name) return;
@@ -55,11 +66,21 @@ export default function RoomPage() {
     }
   };
 
+  const startGame =  () => {
+    socket.emit("startGame", { roomCode }, (res: RoomResponse): void => {
+      if (res.success) {
+        router.push(`/game?code=${res.roomCode}&name=${name}`);
+      } else {
+        alert(res.message);
+      }
+    });
+  };
+
   // console.log("users : ", users);
   // console.log("owner : ", roomOwner);
   // console.log("is  : ", roomOwner in users);
 
-  console.log("is true : ", users[0] === roomOwner);
+  // console.log("is true : ", users[0] === roomOwner);
 
   return (
     <div className="bg-slate-950 flex flex-col items-center justify-center h-screen gap-4">
@@ -108,6 +129,7 @@ export default function RoomPage() {
         <div className="flex justify-center">
           {name === roomOwner ? (
             <button
+            onClick={startGame}
               type="button"
               className="bg-blue-600 cursor-pointer mt-3 p-3 rounded-xl hover:bg-gray-700 text-white "
             >
