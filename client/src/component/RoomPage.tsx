@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import socket from "@/utils/socket";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 type UserListPayload = {
   users: string[];
@@ -67,15 +67,15 @@ export default function RoomPage() {
   };
 
   const startGame = () => {
-    useEffect(() => {
-      socket.on("gameStarted", ({ roomCode }) => {
-        router.push(`/game?code=${roomCode}&name=${name}`);
-      });
+    console.log(`game start for room ${roomCode}`);
+    socket.emit("startGame", { roomCode }, (res: RoomResponse): void => {
+      console.log(roomCode);
+      router.push(`/game?code=${roomCode}&name=${name}`);
+    });
 
-      return () => {
-        socket.off("gameStarted");
-      };
-    }, [name, roomCode]);
+    return () => {
+      socket.off("startGame");
+    };
   };
 
   // console.log("users : ", users);

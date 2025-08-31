@@ -21,8 +21,10 @@ const registerSocketHandlers = (io) => {
       io.to(roomCode).emit("receiveMessage", { name, message });
     });
 
-    socket.on("startGame", ({ roomCode }, callback) => {
-      startGame(io, socket ,roomCode, callback);
+    socket.on("startGame", ( {roomCode} )  => {
+      // console.log('at socket and the roomCode is',roomCode)
+      // console.log('roomCode',roomCode)
+      startGame(io, socket ,roomCode);
     });
 
     socket.on("getTicket",({roomCode , name} , callback) => {

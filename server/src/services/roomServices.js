@@ -51,6 +51,40 @@ const joinRoom = (io, socket, roomCode, name, callback) => {
   console.log(`${name} joined room ${roomCode}`);
 };
 
+const startGame = (io, socket , roomCode) => {
+  // console.log('before room exist checking')
+  if (!rooms[roomCode]) {
+    return console.error('room does not exist');
+  }
+  // console.log('after room exist checking')
+
+  rooms[roomCode].ticket = {}
+
+  for (const [id, name] of Object.entries(rooms[roomCode].users)) {
+    const ticket = ticketGenerator();
+    rooms[roomCode].tickets[id] = ticket;
+    io.to(id).emit("yourTicket", { ticket });
+  }
+
+  io.to(roomCode).emit("gameStarted", { message: "Game has started!" });
+
+  console.log(`BACKEND Game started in room ${roomCode}`);
+};
+
+const getTicket = (io , socket , roomCode , name , callback) => {
+  const room = rooms[roomCode]
+  if (!room) {
+    return callback({ success: false, message: "room does not exist" });
+  }
+
+  const ticket = room.tickets[socket.id]
+    if (!ticket) {
+    return callback({ success: false, message: "ticket not found" });
+  }
+
+  callback({ success: true, ticket });
+}
+
 const handleDisconnect = (io, socket) => {
   for (const [roomCode, room] of Object.entries(rooms)) {
     if (room.users[socket.id]) {
@@ -86,42 +120,4 @@ const handleDisconnect = (io, socket) => {
   }
 };
 
-const startGame = (io, socket , roomCode, callback) => {
-  if (!rooms[roomCode]) {
-    return callback({ success: false, message: "room does not exist" });
-  }
-
-  rooms[roomCode].ticket = {}
-
-  for (const [id, name] of Object.entries(rooms[roomCode].users)) {
-    const ticket = ticketGenerator();
-    rooms[roomCode].tickets[id] = ticket;
-    io.to(id).emit("yourTicket", { ticket });
-  }
-
-  io.to(roomCode).emit("gameStarted", { message: "Game has started!" });
-
-  io.to(roomCode).emit("userList", {
-    users: Object.values(rooms[roomCode].users),
-    owner: rooms[roomCode].users[rooms[roomCode].ownerId],
-  });
-
-  console.log(`Game started in room ${roomCode}`);
-  callback({ success: true, message: "Game started" });
-};
-
-const getTicket = (io , socket , roomCode , name , callback) => {
-  const room = rooms[roomCode]
-  if (!room) {
-    return callback({ success: false, message: "room does not exist" });
-  }
-
-  const ticket = room.tickets[socket.id]
-    if (!ticket) {
-    return callback({ success: false, message: "ticket not found" });
-  }
-
-  callback({ success: true, ticket });
-}
-
-export { createRoom, joinRoom, handleDisconnect, startGame , getTicket };
+export { createRoom, joinRoom,  startGame , getTicket , handleDisconnect };
