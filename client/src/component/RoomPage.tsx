@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 type UserListPayload = {
   users: string[];
   owner: string;
-  ticket : number[]
+  ticket: number[];
 };
 
 type RoomResponse = {
@@ -28,7 +28,7 @@ export default function RoomPage() {
 
   const [roomOwner, setRoomOwner] = useState<string>("");
 
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     if (!roomCode || !name) return;
@@ -66,14 +66,16 @@ export default function RoomPage() {
     }
   };
 
-  const startGame =  () => {
-    socket.emit("startGame", { roomCode }, (res: RoomResponse): void => {
-      if (res.success) {
-        router.push(`/game?code=${res.roomCode}&name=${name}`);
-      } else {
-        alert(res.message);
-      }
-    });
+  const startGame = () => {
+    useEffect(() => {
+      socket.on("gameStarted", ({ roomCode }) => {
+        router.push(`/game?code=${roomCode}&name=${name}`);
+      });
+
+      return () => {
+        socket.off("gameStarted");
+      };
+    }, [name, roomCode]);
   };
 
   // console.log("users : ", users);
@@ -129,7 +131,7 @@ export default function RoomPage() {
         <div className="flex justify-center">
           {name === roomOwner ? (
             <button
-            onClick={startGame}
+              onClick={startGame}
               type="button"
               className="bg-blue-600 cursor-pointer mt-3 p-3 rounded-xl hover:bg-gray-700 text-white "
             >

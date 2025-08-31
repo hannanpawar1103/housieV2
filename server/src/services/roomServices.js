@@ -86,7 +86,7 @@ const handleDisconnect = (io, socket) => {
   }
 };
 
-const startGame = (io, roomCode, callback) => {
+const startGame = (io, socket , roomCode, callback) => {
   if (!rooms[roomCode]) {
     return callback({ success: false, message: "room does not exist" });
   }
@@ -105,9 +105,23 @@ const startGame = (io, roomCode, callback) => {
     users: Object.values(rooms[roomCode].users),
     owner: rooms[roomCode].users[rooms[roomCode].ownerId],
   });
-  
+
   console.log(`Game started in room ${roomCode}`);
   callback({ success: true, message: "Game started" });
 };
 
-export { createRoom, joinRoom, handleDisconnect, startGame };
+const getTicket = (io , socket , roomCode , name , callback) => {
+  const room = rooms[roomCode]
+  if (!room) {
+    return callback({ success: false, message: "room does not exist" });
+  }
+
+  const ticket = room.tickets[socket.id]
+    if (!ticket) {
+    return callback({ success: false, message: "ticket not found" });
+  }
+
+  callback({ success: true, ticket });
+}
+
+export { createRoom, joinRoom, handleDisconnect, startGame , getTicket };
