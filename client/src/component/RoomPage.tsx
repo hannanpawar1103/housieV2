@@ -29,8 +29,7 @@ export default function RoomPage() {
 
   const [ticket, setTicket] = useState<number[][]>([]);
 
-  const [isGameScreenVisible, setIsGameScreenVisible] =
-    useState<boolean>(false);
+  const [isGameScreenVisible, setIsGameScreenVisible] = useState<boolean>(false);
   // const router = useRouter();
 
   useEffect(() => {
@@ -73,6 +72,9 @@ export default function RoomPage() {
     // console.log(`game start for room ${roomCode}`);
 
     socket.emit("startGame", { roomCode }, (res: RoomResponse): void => {
+      if (res.success) {
+        console.log('game has started')
+      }
       // console.log(roomCode);
     });
     return () => {
@@ -235,7 +237,7 @@ export default function RoomPage() {
                   type="text"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className="flex-1 px-4 py-2 rounded-l-lg bg-slate-800 border border-slate-600 focus:ring-1 focus:ring-blue-500"
+                  className="flex-1 px-4 py-8 text-2xl font-bold font-asns rounded-l-lg bg-slate-800 "
                   placeholder="Type your message..."
                 />
                 <button
