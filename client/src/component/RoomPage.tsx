@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import socket from "@/utils/socket";
 import { useRouter } from "next/navigation";
 import { transformWithEsbuild } from "vite";
+import { div } from "motion/react-client";
 
 type UserListPayload = {
   users: string[];
@@ -29,8 +30,10 @@ export default function RoomPage() {
 
   const [roomOwner, setRoomOwner] = useState<string>("");
 
-  const [IsTicketVisible, setIsTicketVisible] = useState<boolean>(false);
   const [ticket, setTicket] = useState<number[][]>([]);
+
+  const [isGameScreenVisible, setIsGameScreenVisible] =
+    useState<boolean>(false);
   // const router = useRouter();
 
   useEffect(() => {
@@ -75,7 +78,6 @@ export default function RoomPage() {
     socket.emit("startGame", { roomCode }, (res: RoomResponse): void => {
       // console.log(roomCode);
     });
-
     return () => {
       socket.off("startGame");
     };
@@ -85,6 +87,10 @@ export default function RoomPage() {
     socket.on("yourTicket", ({ ticket }) => {
       console.log("My Ticket:", ticket);
       setTicket(ticket);
+      if (ticket) {
+        setIsGameScreenVisible(true);
+        console.log("is game screen visible  : ", isGameScreenVisible);
+      }
     });
 
     return () => {
@@ -94,89 +100,160 @@ export default function RoomPage() {
 
   // console.log("users : ", users);
   // console.log("owner : ", roomOwner);
-  // console.log("is  : ", roomOwner in users);
+  console.log("is game screen visible  : ", isGameScreenVisible);
 
   // console.log("is true : ", user === roomOwner);
 
   return (
-    <div className="bg-slate-950 flex flex-col items-center justify-center h-screen gap-4">
-      <h1 className="text-2xl font-bold">Room Code: {roomCode}</h1>
-      <h2 className="text-shadow-orange-50 text-lg font-semibold">Players:</h2>
+    <>
+      {isGameScreenVisible ? (
+        <div className="h-screen w-screen bg-slate-950 flex flex-col text-white">
+          <header className="p-4 justify-center text-center ">
+            <h1 className="text-white font-serif font-bold text-5xl text-center">
+              Housie 🎲
+            </h1>
+          </header>
 
-      {/* <h1>owner : {roomOwner}</h1> */}
-
-      <ul className="list-disc">
-        {users.map((users, iterations) => (
-          <li
-            key={iterations}
-            className={users === roomOwner ? "text-yellow-200" : "text-white"}
-          >
-            {users}
-          </li>
-        ))}
-      </ul>
-
-      <div className="p-6 max-w-2xl mx-auto">
-        <div className="bg-gray-800 text-white h-80 p-4 rounded-lg overflow-y-auto">
-          {chat.map((msg, i) => (
-            <div key={i} className="mb-2">
-              <span className="font-semibold">{msg.name}: </span>
-              <span>{msg.message}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Input box */}
-        <div className="mt-4 flex">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="flex-1 px-4 py-2 rounded-l-lg bg-gray-900 text-white border border-gray-600 focus:ring-1 focus:ring-blue-500"
-            placeholder="Type your message..."
-          />
-
-          <button
-            onClick={sendMessage}
-            className="px-4 py-2 bg-blue-600 rounded-r-lg text-white font-semibold"
-          >
-            Send
-          </button>
-        </div>
-        <div className="flex justify-center">
-          {name === roomOwner ? (
-            <button
-              onClick={startGame}
-              type="button"
-              className="bg-blue-600 cursor-pointer mt-3 p-3 rounded-xl hover:bg-gray-700 text-white "
-            >
-              start game
-            </button>
-          ) : null}
-        </div>
-         <div>hello , game has begun on room {roomCode}</div>
-        <div className="p-4 bg-white shadow-md rounded-xl border border-gray-300">
-          <h2 className="text-xl font-bold text-center mb-3">Your Ticket 🎟️</h2>
-          <div className="grid grid-rows-3 gap-2">
-            {ticket.map((row, rowIndex) => (
-              <div key={rowIndex} className="grid grid-cols-9 gap-2">
-                {row.map((num, colIndex) => (
-                  <div
-                    key={colIndex}
-                    className={`flex items-center justify-center w-10 h-10 rounded-md text-lg font-semibold ${
-                      num
-                        ? "bg-yellow-200 border border-yellow-500"
-                        : "bg-gray-100"
-                    }`}
+          <main className="flex-1 grid grid-cols-12 grid-rows-6 gap-4 p-4">
+            <aside className="col-span-2 row-span-6 bg-slate-900 rounded-xl p-3 overflow-y-auto">
+              <h2 className="text-xl font-semibold mb-3">Players</h2>
+              <ul className="space-y-2">
+                {users.map((u, i) => (
+                  <li
+                    key={i}
+                    className="bg-slate-800 px-3 py-2 rounded-md hover:bg-slate-700"
                   >
-                    {num ?? ""}
+                    {u}
+                  </li>
+                ))}
+              </ul>
+            </aside>
+            <section className="col-span-8 row-span-4 bg-slate-800 rounded-xl">
+              <p className="text-2xl mt-3 block h-10 w-full text-center">🎟️ Your Ticket Here</p>
+              <div className="bg-amber-200 h-80 rounded-4xl mt-4  mx-4">
+                {ticket.map((row,rowIndex) => (
+                  <div key={rowIndex} className="w-full grid grid-cols-9 gap-2">
+                    {row.map((num , colIndex) => (
+                      <div
+                        key={colIndex}
+                        className = {`flex items-center justify-center w-10 h-10 rounded-md text-lg font-semibold ${num ? "bg-neutral-700 border border-yellow-500" : "bg-gray-100"}`}>
+                          {num ?? ''}
+                      </div>
+                    ))}
                   </div>
                 ))}
               </div>
-            ))}
-          </div>
+            </section>
+            <aside className="col-span-2 row-span-4 flex flex-col items-center justify-center gap-4">
+              <div className="w-40 h-40 rounded-full bg-blue-600 flex items-center justify-center text-3xl font-bold">
+                17
+              </div>
+              <button className="bg-green-600 px-6 py-3 rounded-xl hover:bg-green-700 font-semibold">
+                Claim Win
+              </button>
+            </aside>{" "}
+            <section className="col-span-10 row-span-2 bg-slate-900 rounded-xl p-3 flex flex-col">
+              <div className="flex-1 overflow-y-auto mb-2">
+                {chat.map((msg, i) => (
+                  <div key={i} className="mb-1">
+                    <span className="font-semibold">{msg.name}: </span>
+                    <span>{msg.message}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="flex">
+                <input
+                  type="text"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                  className="flex-1 px-4 py-2 rounded-l-lg bg-slate-800 border border-slate-600 focus:ring-1 focus:ring-blue-500"
+                  placeholder="Type your message..."
+                />
+                <button
+                  onClick={sendMessage}
+                  className="px-4 py-2 bg-blue-600 rounded-r-lg hover:bg-blue-700"
+                >
+                  Send
+                </button>
+              </div>
+            </section>
+          </main>
         </div>
-      </div>
-    </div>
+      ) : (
+        <div className="h-screen w-screen bg-slate-950 flex flex-col text-white">
+          <header className="p-4 justify-center text-center ">
+            <h1 className="text-white font-serif font-bold text-5xl text-center">
+              Housie 🎲
+            </h1>
+          </header>
+          <main className="flex flex-1">
+            <aside className="w-1/5 ml-10 border-r border-slate-950 p-4">
+              <h2 className="text-white font-sans font-bold text-3xl">
+                PLAYERS
+              </h2>
+              <ul className="space-y-2 mt-3 text-2xl">
+                {users.map((user, i) => (
+                  <li
+                    key={i}
+                    className={`p-2 rounded-md ${
+                      user === roomOwner
+                        ? "bg-yellow-600/40 text-yellow-300"
+                        : "bg-slate-800"
+                    }`}
+                  >
+                    {user}
+                  </li>
+                ))}
+              </ul>
+            </aside>
+
+            <section className="flex-1 flex flex-col p-4 mr-10 ">
+              <div className="mb-4 text-center">
+                <p className="text-white text-left font-sans font-bold text-2xl">
+                  Room Code:{" "}
+                  <span className="px-2 py-1 bg-slate-800 rounded-md font-mono">
+                    {roomCode}
+                  </span>
+                </p>
+              </div>
+              <div className="flex-1 bg-slate-800 rounded-lg p-4 text-xl overflow-y-auto">
+                {chat.map((msg, i) => (
+                  <div key={i} className="mb-2">
+                    <span className="font-semibold">{msg.name}: </span>
+                    <span>{msg.message}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 flex">
+                <input
+                  type="text"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className="flex-1 px-4 py-2 rounded-l-lg bg-slate-800 border border-slate-600 focus:ring-1 focus:ring-blue-500"
+                  placeholder="Type your message..."
+                />
+                <button
+                  onClick={sendMessage}
+                  className="px-4 py-2 bg-blue-600 rounded-r-lg hover:bg-blue-700"
+                >
+                  Send
+                </button>
+              </div>
+            </section>
+          </main>
+          {name === roomOwner && (
+            <footer className="p-4 text-center border-t border-slate-950">
+              <button
+                onClick={startGame}
+                className="bg-blue-400 px-6 py-3 rounded-xl font-semibold hover:bg-blue-700"
+              >
+                Start Game
+              </button>
+            </footer>
+          )}
+        </div>
+      )}
+    </>
   );
 }

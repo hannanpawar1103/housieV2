@@ -71,19 +71,6 @@ const startGame = (io, socket , roomCode) => {
   console.log(`BACKEND Game started in room ${roomCode}`);
 };
 
-const getTicket = (io , socket , roomCode , name , callback) => {
-  const room = rooms[roomCode]
-  if (!room) {
-    return callback({ success: false, message: "room does not exist" });
-  }
-
-  const ticket = room.tickets[socket.id]
-    if (!ticket) {
-    return callback({ success: false, message: "ticket not found" });
-  }
-
-  callback({ success: true, ticket });
-}
 
 const handleDisconnect = (io, socket) => {
   for (const [roomCode, room] of Object.entries(rooms)) {
@@ -120,4 +107,4 @@ const handleDisconnect = (io, socket) => {
   }
 };
 
-export { createRoom, joinRoom,  startGame , getTicket , handleDisconnect };
+export { createRoom, joinRoom,  startGame  , handleDisconnect };

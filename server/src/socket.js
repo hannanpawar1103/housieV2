@@ -1,9 +1,9 @@
+
 import {
   createRoom,
   joinRoom,
   handleDisconnect,
   startGame,
-  getTicket
 } from "./services/roomServices.js";
 
 const registerSocketHandlers = (io) => {
@@ -26,11 +26,6 @@ const registerSocketHandlers = (io) => {
       // console.log('roomCode',roomCode)
       startGame(io, socket ,roomCode);
     });
-
-    socket.on("getTicket",({roomCode , name} , callback) => {
-      console.log(`roomcode = ${roomCode} and name = ${name}`)
-      getTicket(io , socket , roomCode , name , callback)
-    })
 
     socket.on("disconnect", () => {
       handleDisconnect(io, socket);
