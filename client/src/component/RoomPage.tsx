@@ -128,20 +128,28 @@ export default function RoomPage() {
                 ))}
               </ul>
             </aside>
-            <section className="col-span-8 row-span-4 bg-slate-800 rounded-xl">
-              <p className="text-2xl mt-3 block h-10 w-full text-center">🎟️ Your Ticket Here</p>
-              <div className="bg-amber-200 h-80 rounded-4xl mt-4  mx-4">
-                {ticket.map((row,rowIndex) => (
-                  <div key={rowIndex} className="w-full grid grid-cols-9 gap-2">
-                    {row.map((num , colIndex) => (
-                      <div
-                        key={colIndex}
-                        className = {`flex items-center justify-center w-10 h-10 rounded-md text-lg font-semibold ${num ? "bg-neutral-700 border border-yellow-500" : "bg-gray-100"}`}>
-                          {num ?? ''}
-                      </div>
-                    ))}
-                  </div>
-                ))}
+            <section className="col-span-8 row-span-4 bg-slate-800 rounded-xl p-6 flex flex-col items-center">
+              <p className="text-3xl mb-6 font-serif">🎟️ YOUR TICKET</p>
+
+              <div className="bg-amber-200 p-8 rounded-3xl shadow-xl">
+                <div className="grid grid-rows-3 gap-6">
+                  {ticket.map((row, rowIndex) => (
+                    <div key={rowIndex} className="grid grid-cols-9 gap-6">
+                      {row.map((num, colIndex) => (
+                        <div
+                          key={colIndex}
+                          className={`flex items-center justify-center w-15 h-15 rounded-lg text-2xl font-bold shadow-md ${
+                            num
+                              ? "bg-neutral-700 text-yellow-200 border-2 border-yellow-400"
+                              : "bg-white"
+                          }`}
+                        >
+                          {num || "X"}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
               </div>
             </section>
             <aside className="col-span-2 row-span-4 flex flex-col items-center justify-center gap-4">
