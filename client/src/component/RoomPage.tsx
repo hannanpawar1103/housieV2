@@ -2,9 +2,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import socket from "@/utils/socket";
-import { useRouter } from "next/navigation";
-import { transformWithEsbuild } from "vite";
-import { div } from "motion/react-client";
 
 type UserListPayload = {
   users: string[];
