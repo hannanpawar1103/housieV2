@@ -17,7 +17,7 @@ const ticketGenerator = () => {
     const nums = [];
     for (let i = min; i <= max; i++) nums.push(i);
     const randomNums = nums.sort(() => Math.random() - 0.5).slice(0, 3);
-    console.log(randomNums)
+    // console.log(randomNums)
     return randomNums;
   });
 
@@ -45,8 +45,8 @@ const ticketGenerator = () => {
       }
     }
   }
+     console.log("ticket ",ticket) 
   return ticket;
-//    console.log("ticket",ticket)
 };
 
 // ticketGenerator();

@@ -8,7 +8,7 @@ import { transformWithEsbuild } from "vite";
 type UserListPayload = {
   users: string[];
   owner: string;
-  ticket: number[];
+  ticket: number[][];
 };
 
 type RoomResponse = {
@@ -29,16 +29,9 @@ export default function RoomPage() {
 
   const [roomOwner, setRoomOwner] = useState<string>("");
 
-  const [isOwner, setIsOwner] = useState<boolean>(false);
-  const [redirecting, setRedirecting] = useState<boolean>(false);
-
-  const router = useRouter();
-
-  useEffect(() => {
-    if (name === roomOwner) {
-      setIsOwner(true);
-    }
-  });
+  const [IsTicketVisible, setIsTicketVisible] = useState<boolean>(false);
+  const [ticket, setTicket] = useState<number[][]>([]);
+  // const router = useRouter();
 
   useEffect(() => {
     if (!roomCode || !name) return;
@@ -77,10 +70,10 @@ export default function RoomPage() {
   };
 
   const startGame = () => {
-    console.log(`game start for room ${roomCode}`);
+    // console.log(`game start for room ${roomCode}`);
+
     socket.emit("startGame", { roomCode }, (res: RoomResponse): void => {
-      console.log(roomCode);
-      setRedirecting(true);
+      // console.log(roomCode);
     });
 
     return () => {
@@ -88,11 +81,22 @@ export default function RoomPage() {
     };
   };
 
+  useEffect(() => {
+    socket.on("yourTicket", ({ ticket }) => {
+      console.log("My Ticket:", ticket);
+      setTicket(ticket);
+    });
+
+    return () => {
+      socket.off("yourTicket");
+    };
+  }, []);
+
   // console.log("users : ", users);
   // console.log("owner : ", roomOwner);
   // console.log("is  : ", roomOwner in users);
 
-  // console.log("is true : ", users[0] === roomOwner);
+  // console.log("is true : ", user === roomOwner);
 
   return (
     <div className="bg-slate-950 flex flex-col items-center justify-center h-screen gap-4">
@@ -105,7 +109,7 @@ export default function RoomPage() {
         {users.map((users, iterations) => (
           <li
             key={iterations}
-            className={isOwner ? "text-yellow-200" : "text-white"}
+            className={users === roomOwner ? "text-yellow-200" : "text-white"}
           >
             {users}
           </li>
@@ -140,7 +144,7 @@ export default function RoomPage() {
           </button>
         </div>
         <div className="flex justify-center">
-          {isOwner ? (
+          {name === roomOwner ? (
             <button
               onClick={startGame}
               type="button"
@@ -150,7 +154,28 @@ export default function RoomPage() {
             </button>
           ) : null}
         </div>
-        {redirecting ? <div>hello</div> : null}
+         <div>hello , game has begun on room {roomCode}</div>
+        <div className="p-4 bg-white shadow-md rounded-xl border border-gray-300">
+          <h2 className="text-xl font-bold text-center mb-3">Your Ticket 🎟️</h2>
+          <div className="grid grid-rows-3 gap-2">
+            {ticket.map((row, rowIndex) => (
+              <div key={rowIndex} className="grid grid-cols-9 gap-2">
+                {row.map((num, colIndex) => (
+                  <div
+                    key={colIndex}
+                    className={`flex items-center justify-center w-10 h-10 rounded-md text-lg font-semibold ${
+                      num
+                        ? "bg-yellow-200 border border-yellow-500"
+                        : "bg-gray-100"
+                    }`}
+                  >
+                    {num ?? ""}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
