@@ -2,6 +2,12 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import socket from "@/utils/socket";
+import { ScrollArea  } from "@/component/ui/scroll";
+
+type ChatMessage = {
+  name: string;
+  message: string;
+};
 
 type UserListPayload = {
   users: string[];
@@ -23,13 +29,14 @@ export default function RoomPage() {
   const [users, setUsers] = useState<string[]>([]);
 
   const [message, setMessage] = useState("");
-  const [chat, setChat] = useState<{ name: string; message: string }[]>([]);
+  const [chat, setChat] = useState<ChatMessage[]>([]);
 
   const [roomOwner, setRoomOwner] = useState<string>("");
 
   const [ticket, setTicket] = useState<number[][]>([]);
 
-  const [isGameScreenVisible, setIsGameScreenVisible] = useState<boolean>(false);
+  const [isGameScreenVisible, setIsGameScreenVisible] =
+    useState<boolean>(false);
   // const router = useRouter();
 
   useEffect(() => {
@@ -73,7 +80,7 @@ export default function RoomPage() {
 
     socket.emit("startGame", { roomCode }, (res: RoomResponse): void => {
       if (res.success) {
-        console.log('game has started')
+        console.log("game has started");
       }
       // console.log(roomCode);
     });
@@ -106,7 +113,7 @@ export default function RoomPage() {
   return (
     <>
       {isGameScreenVisible ? (
-        <div className="h-screen w-screen bg-slate-950 flex flex-col text-white">
+        <div className="h-screen w-screen flex flex-col text-white">
           <header className="p-4 justify-center text-center ">
             <h1 className="text-white font-serif font-bold text-5xl text-center">
               Housie 🎲
@@ -168,6 +175,7 @@ export default function RoomPage() {
                   </div>
                 ))}
               </div>
+
               <div className="flex">
                 <input
                   type="text"
@@ -188,7 +196,7 @@ export default function RoomPage() {
           </main>
         </div>
       ) : (
-        <div className="h-screen w-screen bg-slate-950 flex flex-col text-white">
+        <div className="h-screen w-screen bg-slate-950  flex flex-col text-white">
           <header className="p-4 justify-center text-center ">
             <h1 className="text-white font-serif font-bold text-5xl text-center">
               Housie 🎲
@@ -224,19 +232,28 @@ export default function RoomPage() {
                   </span>
                 </p>
               </div>
-              <div className="flex-1 bg-slate-800 rounded-lg p-4 text-xl overflow-y-auto">
-                {chat.map((msg, i) => (
-                  <div key={i} className="mb-2">
-                    <span className="font-semibold">{msg.name}: </span>
-                    <span>{msg.message}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 flex">
+              <ScrollArea className="max-h-96 rounded-md mb-4">
+                <div className="flex-1 bg-slate-800 rounded-lg p-4 text-xl overflow-y-auto">
+                  {chat.map((msg, i) => (
+                    <div key={i} className="mb-2">
+                      <span
+                        className={`font-semibold ${
+                          msg.name === name ? "text-green-600" : "text-white"
+                        }`}
+                      >
+                        {msg.name}:{" "}
+                      </span>
+                      <span>{msg.message}</span>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+              <div className=" flex">
                 <input
                   type="text"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
                   className="flex-1 px-4 py-8 text-2xl font-bold font-asns rounded-l-lg bg-slate-800 "
                   placeholder="Type your message..."
                 />
@@ -250,7 +267,7 @@ export default function RoomPage() {
             </section>
           </main>
           {name === roomOwner && (
-            <footer className="p-4 text-center border-t border-slate-950">
+            <footer className="p-4 -mt-10 text-center border-t border-slate-950">
               <button
                 onClick={startGame}
                 className="bg-blue-400 px-6 py-3 rounded-xl font-semibold hover:bg-blue-700"
