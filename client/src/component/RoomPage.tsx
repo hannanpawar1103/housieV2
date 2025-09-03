@@ -143,7 +143,7 @@ export default function RoomPage() {
                               : "bg-white"
                           }`}
                         >
-                          {num || "X"}
+                          {num || "x"}
                         </div>
                       ))}
                     </div>
