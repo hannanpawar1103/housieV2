@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import socket from "@/utils/socket";
-import { ScrollArea  } from "@/component/ui/scroll";
+import { ScrollArea } from "@/component/ui/scroll";
 
 type ChatMessage = {
   name: string;
@@ -39,6 +39,12 @@ export default function RoomPage() {
     useState<boolean>(false);
   // const router = useRouter();
 
+  const chatRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToBottom = () => {
+    chatRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   useEffect(() => {
     if (!roomCode || !name) return;
 
@@ -52,21 +58,30 @@ export default function RoomPage() {
       setRoomOwner(owner);
     });
 
-    return () => {
-      socket.off("userList");
-      socket.disconnect();
-    };
-  }, [roomCode, name]);
-
-  useEffect(() => {
     socket.on("receiveMessage", (data: { name: string; message: string }) => {
       setChat((prev) => [...prev, data]);
     });
+    socket.on("yourTicket", ({ ticket }) => {
+      console.log("My Ticket:", ticket);
+      setTicket(ticket);
+      if (ticket) {
+        setIsGameScreenVisible(true);
+        console.log("is game screen visible  : ", isGameScreenVisible);
+      }
+    });
 
     return () => {
+      socket.off("userList");
+      socket.disconnect();
       socket.off("receiveMessage");
+      socket.off("yourTicket");
     };
-  }, []);
+  }, [roomCode, name]);
+
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chat]);
 
   const sendMessage = () => {
     if (message.trim()) {
@@ -88,22 +103,6 @@ export default function RoomPage() {
       socket.off("startGame");
     };
   };
-
-  useEffect(() => {
-    socket.on("yourTicket", ({ ticket }) => {
-      console.log("My Ticket:", ticket);
-      setTicket(ticket);
-      if (ticket) {
-        setIsGameScreenVisible(true);
-        console.log("is game screen visible  : ", isGameScreenVisible);
-      }
-    });
-
-    return () => {
-      socket.off("yourTicket");
-    };
-  }, []);
-
   // console.log("users : ", users);
   // console.log("owner : ", roomOwner);
   console.log("is game screen visible  : ", isGameScreenVisible);
@@ -232,8 +231,8 @@ export default function RoomPage() {
                   </span>
                 </p>
               </div>
-              <ScrollArea className="max-h-96 rounded-md mb-4">
-                <div className="flex-1 bg-slate-800 rounded-lg p-4 text-xl overflow-y-auto">
+              <ScrollArea className="rounded-md mb-4">
+                <div ref={chatRef} className="flex-1 bg-slate-800 h-96 rounded-lg p-4 text-xl overflow-y-auto">
                   {chat.map((msg, i) => (
                     <div key={i} className="mb-2">
                       <span
