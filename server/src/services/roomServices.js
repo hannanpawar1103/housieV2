@@ -1,6 +1,5 @@
 import { roomCodeGenerator } from "../utils/roomCodeGenerator.js";
 import { ticketGenerator } from "../utils/ticketGenerator.js";
-import randomNumberCalled from "../utils/randomNumberCalling.js";
 
 const rooms = {};
 
@@ -107,16 +106,9 @@ const handleDisconnect = (io, socket) => {
   }
 };
 
-const randomNumberCalling = (io , socket , roomCode) => {
-
-  io.to(roomCode).emit("sendRandomNumber", randomNumberCalled());
-  
-};
-
 export {
   createRoom,
   joinRoom,
   startGame,
   handleDisconnect,
-  randomNumberCalling,
 };

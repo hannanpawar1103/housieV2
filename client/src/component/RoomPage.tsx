@@ -9,6 +9,9 @@ type ChatMessage = {
   name: string;
   message: string;
 };
+type randomNumberType = {
+  data: number[];
+};
 
 type UserListPayload = {
   users: string[];
@@ -31,10 +34,9 @@ export default function RoomPage() {
 
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState<ChatMessage[]>([]);
-
   const [roomOwner, setRoomOwner] = useState<string>("");
-
   const [ticket, setTicket] = useState<number[][]>([]);
+  const [randomNumber, setRandomNumber] = useState<any>([]);
 
   const [isGameScreenVisible, setIsGameScreenVisible] =
     useState<boolean>(false);
@@ -62,7 +64,7 @@ export default function RoomPage() {
     socket.on("receiveMessage", (data: { name: string; message: string }) => {
       setChat((prev) => [...prev, data]);
     });
-    
+
     socket.on("yourTicket", ({ ticket }) => {
       console.log("My Ticket:", ticket);
       setTicket(ticket);
@@ -72,7 +74,21 @@ export default function RoomPage() {
       }
     });
 
+    socket.on("sendRandomNumber", ({ data }) => {
+      console.log(data);
+      const temp = data
+      let i = 0;
+      setInterval(() => {
+        if (temp[i] < temp.lenght) {
+          setRandomNumber(temp[i]);
+        }
+        i++;
+      }, 5000);
+      // setRandomNumber(data);
+    });
+
     return () => {
+      socket.off("sendRandomNumber");
       socket.off("userList");
       socket.disconnect();
       socket.off("receiveMessage");
@@ -89,6 +105,10 @@ export default function RoomPage() {
       socket.emit("sendMessage", { roomCode, name, message });
       setMessage("");
     }
+  };
+
+  const startRandomNumber = () => {
+    socket.emit("startNumberCalling", { roomCode });
   };
 
   const startGame = () => {
@@ -163,9 +183,12 @@ export default function RoomPage() {
               </div>
             </section>
             <aside className="col-span-2 row-span-4 flex flex-col items-center justify-center gap-4">
-              <NumbersCalled>
-                17
-              </NumbersCalled>
+              <button onClick={startRandomNumber}>
+                <NumbersCalled>
+                  {/* {randomNumber} */}
+                  13
+                </NumbersCalled>
+              </button>
               <button className="bg-green-600 px-6 py-3 rounded-xl hover:bg-green-700 font-semibold">
                 Claim Win
               </button>
@@ -256,9 +279,7 @@ export default function RoomPage() {
                       >
                         {msg.name}:{" "}
                       </span>
-                      <span>
-                        {msg.message}
-                      </span>
+                      <span>{msg.message}</span>
                     </div>
                   ))}
                 </div>
