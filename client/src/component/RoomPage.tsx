@@ -2,7 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import socket from "@/utils/socket";
-import { ScrollArea , ScrollBar} from "@/component/ui/scroll";
+import { ScrollArea } from "@/component/ui/scroll";
+import NumbersCalled from "./ui/numberscalled";
 
 type ChatMessage = {
   name: string;
@@ -61,6 +62,7 @@ export default function RoomPage() {
     socket.on("receiveMessage", (data: { name: string; message: string }) => {
       setChat((prev) => [...prev, data]);
     });
+    
     socket.on("yourTicket", ({ ticket }) => {
       console.log("My Ticket:", ticket);
       setTicket(ticket);
@@ -161,17 +163,16 @@ export default function RoomPage() {
               </div>
             </section>
             <aside className="col-span-2 row-span-4 flex flex-col items-center justify-center gap-4">
-              <div className="w-40 h-40 rounded-full bg-blue-600 flex items-center justify-center text-3xl font-bold">
+              <NumbersCalled>
                 17
-              </div>
+              </NumbersCalled>
               <button className="bg-green-600 px-6 py-3 rounded-xl hover:bg-green-700 font-semibold">
                 Claim Win
               </button>
             </aside>{" "}
             <section className="col-span-10 row-span-2 bg-slate-900 rounded-xl p-3 flex flex-col">
-              <ScrollBar>
               <ScrollArea className="rounded-md mb-4">
-                <div className="flex-1 h-24 overflow-y-auto mb-2">
+                <div className="flex-1 h-24 mb-2">
                   {chat.map((msg, i) => (
                     <div ref={chatRef} key={i} className="mb-1">
                       <span
@@ -186,7 +187,6 @@ export default function RoomPage() {
                   ))}
                 </div>
               </ScrollArea>
-              </ScrollBar>
 
               <div className="flex">
                 <input
@@ -244,7 +244,8 @@ export default function RoomPage() {
                   </span>
                 </p>
               </div>
-              <ScrollArea className="rounded-md mb-4">
+
+              <ScrollArea className="rounded-md h-96 mb-4">
                 <div className="flex-1 bg-slate-800 h-96 rounded-lg p-4 text-xl overflow-y-auto">
                   {chat.map((msg, i) => (
                     <div ref={chatRef} key={i} className="mb-2">
@@ -255,7 +256,9 @@ export default function RoomPage() {
                       >
                         {msg.name}:{" "}
                       </span>
-                      <span>{msg.message}</span>
+                      <span>
+                        {msg.message}
+                      </span>
                     </div>
                   ))}
                 </div>
