@@ -78,7 +78,6 @@ export default function RoomPage() {
     };
   }, [roomCode, name]);
 
-
   useEffect(() => {
     scrollToBottom();
   }, [chat]);
@@ -126,7 +125,11 @@ export default function RoomPage() {
                 {users.map((u, i) => (
                   <li
                     key={i}
-                    className="bg-slate-800 px-3 py-2 rounded-md hover:bg-slate-700"
+                    className={`p-2 rounded-md ${
+                      u === roomOwner
+                        ? "bg-yellow-600/40 text-yellow-300"
+                        : "bg-slate-800"
+                    }`}
                   >
                     {u}
                   </li>
@@ -143,7 +146,7 @@ export default function RoomPage() {
                       {row.map((num, colIndex) => (
                         <div
                           key={colIndex}
-                          className={`flex items-center justify-center w-15 h-15 rounded-lg text-2xl font-bold shadow-md ${
+                          className={`flex cursor-pointer items-center justify-center w-15 h-15 rounded-lg text-2xl font-bold shadow-md ${
                             num
                               ? "bg-neutral-700 text-yellow-200 border-2 border-yellow-400"
                               : "bg-white"
@@ -166,14 +169,22 @@ export default function RoomPage() {
               </button>
             </aside>{" "}
             <section className="col-span-10 row-span-2 bg-slate-900 rounded-xl p-3 flex flex-col">
-              <div className="flex-1 overflow-y-auto mb-2">
-                {chat.map((msg, i) => (
-                  <div key={i} className="mb-1">
-                    <span className="font-semibold">{msg.name}: </span>
-                    <span>{msg.message}</span>
-                  </div>
-                ))}
-              </div>
+              <ScrollArea className="rounded-md mb-4">
+                <div className="flex-1 h-24 overflow-y-auto mb-2">
+                  {chat.map((msg, i) => (
+                    <div ref={chatRef} key={i} className="mb-1">
+                      <span
+                        className={`font-semibold ${
+                          msg.name === name ? "text-green-600" : "text-white"
+                        }`}
+                      >
+                        {msg.name}:{" "}
+                      </span>
+                      <span>{msg.message}</span>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
 
               <div className="flex">
                 <input
@@ -181,7 +192,7 @@ export default function RoomPage() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                  className="flex-1 px-4 py-2 rounded-l-lg bg-slate-800 border border-slate-600 focus:ring-1 focus:ring-blue-500"
+                  className="flex-1 px-3 py-1 rounded-l-lg bg-slate-800 border border-slate-600 focus:ring-1 focus:ring-blue-500"
                   placeholder="Type your message..."
                 />
                 <button
@@ -232,9 +243,9 @@ export default function RoomPage() {
                 </p>
               </div>
               <ScrollArea className="rounded-md mb-4">
-                <div ref={chatRef} className="flex-1 bg-slate-800 h-96 rounded-lg p-4 text-xl overflow-y-auto">
+                <div className="flex-1 bg-slate-800 h-96 rounded-lg p-4 text-xl overflow-y-auto">
                   {chat.map((msg, i) => (
-                    <div key={i} className="mb-2">
+                    <div ref={chatRef} key={i} className="mb-2">
                       <span
                         className={`font-semibold ${
                           msg.name === name ? "text-green-600" : "text-white"

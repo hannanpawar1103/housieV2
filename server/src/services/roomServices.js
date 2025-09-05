@@ -71,7 +71,6 @@ const startGame = (io, socket , roomCode) => {
   console.log(`BACKEND Game started in room ${roomCode}`);
 };
 
-
 const handleDisconnect = (io, socket) => {
   for (const [roomCode, room] of Object.entries(rooms)) {
     if (room.users[socket.id]) {
@@ -106,5 +105,7 @@ const handleDisconnect = (io, socket) => {
     }
   }
 };
+
+
 
 export { createRoom, joinRoom,  startGame  , handleDisconnect };
