@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import socket from "@/utils/socket";
-import { ScrollArea } from "@/component/ui/scroll";
+import { ScrollArea , ScrollBar} from "@/component/ui/scroll";
 
 type ChatMessage = {
   name: string;
@@ -169,6 +169,7 @@ export default function RoomPage() {
               </button>
             </aside>{" "}
             <section className="col-span-10 row-span-2 bg-slate-900 rounded-xl p-3 flex flex-col">
+              <ScrollBar>
               <ScrollArea className="rounded-md mb-4">
                 <div className="flex-1 h-24 overflow-y-auto mb-2">
                   {chat.map((msg, i) => (
@@ -185,6 +186,7 @@ export default function RoomPage() {
                   ))}
                 </div>
               </ScrollArea>
+              </ScrollBar>
 
               <div className="flex">
                 <input

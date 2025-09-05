@@ -1,13 +1,13 @@
 let randomNumberCalled = []
 
 for (let i = 1; i <= 90; i++) {
-  arr.push(i)
+  randomNumberCalled.push(i)
 }
 
-for (let i = arr.length - 1; i > 0; i--) {
+for (let i = randomNumberCalled.length - 1; i > 0; i--) {
   const j = Math.floor(Math.random() * (i + 1));
-  [arr[i], arr[j]] = [arr[j], arr[i]] 
+  [randomNumberCalled[i], randomNumberCalled[j]] = [randomNumberCalled[j], randomNumberCalled[i]] 
 }
 
-// console.log(arr)
+// console.log(randomNumberCalled)
 export default randomNumberCalled

@@ -4,7 +4,7 @@ import http from "http";
 import { Server } from "socket.io";
 import registerSocketHandlers from "./src/controller/rooms.controller.js";
 import chatSocketHandlers from "./src/controller/chat.controller.js";
-import housieRandomNumbersCallingSocketHandlers from "./src/controller/housieRandomNumbersCalling.controller.js";
+import {housieRandomNumbersCallingSocketHandlers} from "./src/controller/housieRandomNumbersCalling.controller.js";
 
 const app = express();
 const server = http.createServer(app);
