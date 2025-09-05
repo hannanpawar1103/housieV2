@@ -17,10 +17,6 @@ const registerSocketHandlers = (io) => {
       joinRoom(io, socket, roomCode, name, callback);
     });
 
-    // socket.on("sendMessage", ({ roomCode, name, message }) => {
-    //   io.to(roomCode).emit("receiveMessage", { name, message });
-    // });
-
     socket.on("startGame", ( {roomCode} )  => {
       // console.log('at socket and the roomCode is',roomCode)
       // console.log('roomCode',roomCode)

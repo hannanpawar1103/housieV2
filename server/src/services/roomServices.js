@@ -1,5 +1,6 @@
 import { roomCodeGenerator } from "../utils/roomCodeGenerator.js";
 import { ticketGenerator } from "../utils/ticketGenerator.js";
+import randomNumberCalled from "../utils/randomNumberCalling.js";
 
 const rooms = {};
 
@@ -51,14 +52,14 @@ const joinRoom = (io, socket, roomCode, name, callback) => {
   console.log(`${name} joined room ${roomCode}`);
 };
 
-const startGame = (io, socket , roomCode) => {
+const startGame = (io, socket, roomCode) => {
   // console.log('before room exist checking')
   if (!rooms[roomCode]) {
-    return console.error('room does not exist');
+    return console.error("room does not exist");
   }
   // console.log('after room exist checking')
 
-  rooms[roomCode].ticket = {}
+  rooms[roomCode].ticket = {};
 
   for (const [id, name] of Object.entries(rooms[roomCode].users)) {
     const ticket = ticketGenerator();
@@ -106,6 +107,16 @@ const handleDisconnect = (io, socket) => {
   }
 };
 
+const randomNumberCalling = (io , socket , roomCode) => {
 
+  io.to(roomCode).emit("sendRandomNumber", randomNumberCalled());
+  
+};
 
-export { createRoom, joinRoom,  startGame  , handleDisconnect };
+export {
+  createRoom,
+  joinRoom,
+  startGame,
+  handleDisconnect,
+  randomNumberCalling,
+};
