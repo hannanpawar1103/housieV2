@@ -7,10 +7,7 @@ const randomNumberCalled = () => {
 
   for (let i = randomNumberCalled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [randomNumberCalled[i], randomNumberCalled[j]] = [
-      randomNumberCalled[j],
-      randomNumberCalled[i],
-    ];
+    [randomNumberCalled[i], randomNumberCalled[j]] = [randomNumberCalled[j], randomNumberCalled[i]];
   }
 
   return randomNumberCalled;

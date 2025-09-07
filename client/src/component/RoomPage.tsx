@@ -36,7 +36,10 @@ export default function RoomPage() {
   const [chat, setChat] = useState<ChatMessage[]>([]);
   const [roomOwner, setRoomOwner] = useState<string>("");
   const [ticket, setTicket] = useState<number[][]>([]);
-  const [randomNumber, setRandomNumber] = useState<any>([]);
+
+  const [randomNumber, setRandomNumber] = useState<number[]>([]);
+  const [currentNumberIndex, setCurrentNumberIndex] = useState<number>(0);
+  const [currentNumber, setCurrentNumber] = useState<number | null>(null);
 
   const [isGameScreenVisible, setIsGameScreenVisible] =
     useState<boolean>(false);
@@ -66,25 +69,12 @@ export default function RoomPage() {
     });
 
     socket.on("yourTicket", ({ ticket }) => {
-      console.log("My Ticket:", ticket);
+      // console.log("My Ticket:", ticket);
       setTicket(ticket);
       if (ticket) {
         setIsGameScreenVisible(true);
-        console.log("is game screen visible  : ", isGameScreenVisible);
+        // console.log("is game screen visible  : ", isGameScreenVisible);
       }
-    });
-
-    socket.on("sendRandomNumber", ({ data }) => {
-      console.log(data);
-      const temp = data
-      let i = 0;
-      setInterval(() => {
-        if (temp[i] < temp.lenght) {
-          setRandomNumber(temp[i]);
-        }
-        i++;
-      }, 5000);
-      // setRandomNumber(data);
     });
 
     return () => {
@@ -109,10 +99,43 @@ export default function RoomPage() {
 
   const startRandomNumber = () => {
     socket.emit("startNumberCalling", { roomCode });
+    socket.on("sendRandomNumber", ({ data }) => {
+      setRandomNumber(data);
+      setCurrentNumberIndex(0);
+      setCurrentNumber(data[0]);
+    });
   };
 
+  useEffect(() => {
+    if (randomNumber.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentNumberIndex((prev) => {
+        const next = prev + 1;
+        if (next < randomNumber.length) {
+          setCurrentNumber(randomNumber[next]);
+          return next;
+        } else {
+          clearInterval(interval);
+          return prev;
+        }
+      });
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [randomNumber]);
+
+  useEffect(() => {
+    if (randomNumber.length > 0) {
+      setCurrentNumber(randomNumber[currentNumberIndex]);
+    }
+    console.log("rnadom num", randomNumber);
+    console.log("current num", currentNumber);
+    console.log("current num index ", currentNumberIndex);
+  }, [currentNumberIndex, randomNumber]);
+
   const startGame = () => {
-    // console.log(`game start for room ${roomCode}`);
+    `game start for room ${roomCode}`;
 
     socket.emit("startGame", { roomCode }, (res: RoomResponse): void => {
       if (res.success) {
@@ -124,10 +147,14 @@ export default function RoomPage() {
       socket.off("startGame");
     };
   };
+
+  const markTicketNumber = () => {
+    
+  }
+
   // console.log("users : ", users);
   // console.log("owner : ", roomOwner);
-  console.log("is game screen visible  : ", isGameScreenVisible);
-
+  // console.log("is game screen visible  : ", isGameScreenVisible);
   // console.log("is true : ", user === roomOwner);
 
   return (
@@ -167,6 +194,7 @@ export default function RoomPage() {
                     <div key={rowIndex} className="grid grid-cols-9 gap-6">
                       {row.map((num, colIndex) => (
                         <div
+                          onClick={markTicketNumber}
                           key={colIndex}
                           className={`flex cursor-pointer items-center justify-center w-15 h-15 rounded-lg text-2xl font-bold shadow-md ${
                             num
@@ -184,10 +212,7 @@ export default function RoomPage() {
             </section>
             <aside className="col-span-2 row-span-4 flex flex-col items-center justify-center gap-4">
               <button onClick={startRandomNumber}>
-                <NumbersCalled>
-                  {/* {randomNumber} */}
-                  13
-                </NumbersCalled>
+                <NumbersCalled>{currentNumber}</NumbersCalled>
               </button>
               <button className="bg-green-600 px-6 py-3 rounded-xl hover:bg-green-700 font-semibold">
                 Claim Win
