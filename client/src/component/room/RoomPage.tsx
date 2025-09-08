@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import socket from "@/utils/socket";
 import { ScrollArea } from "@/component/ui/scroll";
-import NumbersCalled from "./ui/numberscalled";
+import NumbersCalled from "@/component/ui/numberscalled";
 
 type ChatMessage = {
   name: string;

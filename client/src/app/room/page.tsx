@@ -1,6 +1,6 @@
 "use client";
 
-import RoomPage from "@/component/RoomPage";
+import RoomPage from "@/component/room/RoomPage";
 import { Suspense } from "react";
 
 export default function RoomPageWrapper() {
