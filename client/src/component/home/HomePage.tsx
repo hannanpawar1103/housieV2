@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/component/ui/button";
 import socket from "@/utils/socket";
+import { useGameStore } from "@/store/gameStore";
 
 type RoomResponse = {
   success: boolean;
@@ -12,14 +13,13 @@ type RoomResponse = {
 };
 
 export function HomePage() {
-  const [name, setName] = useState("");
-  const [roomCode, setRoomCode] = useState("");
+  const { username, setUsername, roomCode, setRoomCode } = useGameStore();
   const router = useRouter();
 
   const createRoom = () => {
-    socket.emit("createRoom", { name }, (res: RoomResponse): void => {
+    socket.emit("createRoom", { username }, (res: RoomResponse): void => {
       if (res.success) {
-        router.push(`/room?code=${res.roomCode}&name=${name}`);
+        router.push(`/room?code=${res.roomCode}&username=${username}`);
       } else {
         alert(res.message);
       }
@@ -28,9 +28,9 @@ export function HomePage() {
 
   const joinRoom = () => {
     socket.connect();
-    socket.emit("joinRoom", { roomCode, name }, (res: RoomResponse): void => {
+    socket.emit("joinRoom", { roomCode, username }, (res: RoomResponse): void => {
       if (res.success) {
-        router.push(`/room?code=${roomCode}&name=${name}`);
+        router.push(`/room?code=${roomCode}&username=${username}`);
       } else {
         alert(res.message);
       }
@@ -45,15 +45,15 @@ export function HomePage() {
         </h1>
         <form className="space-y-6">
           <div className="flex flex-col">
-            <label htmlFor="name" className="text-gray-300 font-medium">
+            <label htmlFor="username" className="text-gray-300 font-medium">
               Your Name
             </label>
             <input
-              id="name"
-              name="name"
+              id="username"
+              name="username"
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               placeholder="e.g., John Doe"
               className="bg-gray-900 text-white w-full px-4 py-3 text-lg rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
               required
