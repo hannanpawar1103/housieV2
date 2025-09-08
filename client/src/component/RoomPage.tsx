@@ -97,43 +97,6 @@ export default function RoomPage() {
     }
   };
 
-  const startRandomNumber = () => {
-    socket.emit("startNumberCalling", { roomCode });
-    socket.on("sendRandomNumber", ({ data }) => {
-      setRandomNumber(data);
-      setCurrentNumberIndex(0);
-      setCurrentNumber(data[0]);
-    });
-  };
-
-  useEffect(() => {
-    if (randomNumber.length === 0) return;
-
-    const interval = setInterval(() => {
-      setCurrentNumberIndex((prev) => {
-        const next = prev + 1;
-        if (next < randomNumber.length) {
-          setCurrentNumber(randomNumber[next]);
-          return next;
-        } else {
-          clearInterval(interval);
-          return prev;
-        }
-      });
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, [randomNumber]);
-
-  useEffect(() => {
-    if (randomNumber.length > 0) {
-      setCurrentNumber(randomNumber[currentNumberIndex]);
-    }
-    console.log("rnadom num", randomNumber);
-    console.log("current num", currentNumber);
-    console.log("current num index ", currentNumberIndex);
-  }, [currentNumberIndex, randomNumber]);
-
   const startGame = () => {
     `game start for room ${roomCode}`;
 
@@ -148,9 +111,7 @@ export default function RoomPage() {
     };
   };
 
-  const markTicketNumber = () => {
-    
-  }
+  const markTicketNumber = () => {};
 
   // console.log("users : ", users);
   // console.log("owner : ", roomOwner);
@@ -211,9 +172,7 @@ export default function RoomPage() {
               </div>
             </section>
             <aside className="col-span-2 row-span-4 flex flex-col items-center justify-center gap-4">
-              <button onClick={startRandomNumber}>
-                <NumbersCalled>{currentNumber}</NumbersCalled>
-              </button>
+              <NumbersCalled />
               <button className="bg-green-600 px-6 py-3 rounded-xl hover:bg-green-700 font-semibold">
                 Claim Win
               </button>
