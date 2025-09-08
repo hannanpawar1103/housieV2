@@ -4,6 +4,8 @@ import { useSearchParams } from "next/navigation";
 import socket from "@/utils/socket";
 import { ScrollArea } from "@/component/ui/scroll";
 import NumbersCalled from "@/component/ui/numberscalled";
+import { useGameStore } from "@/store/gameStore";
+
 
 type ChatMessage = {
   name: string;
@@ -27,23 +29,25 @@ type RoomResponse = {
 };
 
 export default function RoomPage() {
+
+  const {
+    users,
+    setUsers,
+    roomOwner,
+  setRoomOwner,
+    ticket,
+  setTicket,
+  chat,
+  addChatMessage,
+  isGameScreenVisible,
+  setIsGameScreenVisible,
+  } = useGameStore()
+
   const searchParams = useSearchParams();
   const roomCode = searchParams.get("code");
-  const name = searchParams.get("name");
-  const [users, setUsers] = useState<string[]>([]);
+  const name = searchParams.get("username");
 
   const [message, setMessage] = useState("");
-  const [chat, setChat] = useState<ChatMessage[]>([]);
-  const [roomOwner, setRoomOwner] = useState<string>("");
-  const [ticket, setTicket] = useState<number[][]>([]);
-
-  const [randomNumber, setRandomNumber] = useState<number[]>([]);
-  const [currentNumberIndex, setCurrentNumberIndex] = useState<number>(0);
-  const [currentNumber, setCurrentNumber] = useState<number | null>(null);
-
-  const [isGameScreenVisible, setIsGameScreenVisible] =
-    useState<boolean>(false);
-  // const router = useRouter();
 
   const chatRef = useRef<HTMLDivElement | null>(null);
 
@@ -65,7 +69,7 @@ export default function RoomPage() {
     });
 
     socket.on("receiveMessage", (data: { name: string; message: string }) => {
-      setChat((prev) => [...prev, data]);
+      addChatMessage(data);
     });
 
     socket.on("yourTicket", ({ ticket }) => {
