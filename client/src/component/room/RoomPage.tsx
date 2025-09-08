@@ -6,7 +6,6 @@ import { ScrollArea } from "@/component/ui/scroll";
 import NumbersCalled from "@/component/ui/numberscalled";
 import { useGameStore } from "@/store/gameStore";
 
-
 type ChatMessage = {
   name: string;
   message: string;
@@ -29,24 +28,22 @@ type RoomResponse = {
 };
 
 export default function RoomPage() {
-
   const {
     users,
     setUsers,
     roomOwner,
-  setRoomOwner,
+    setRoomOwner,
     ticket,
-  setTicket,
-  chat,
-  addChatMessage,
-  isGameScreenVisible,
-  setIsGameScreenVisible,
-  } = useGameStore()
+    setTicket,
+    chat,
+    addChatMessage,
+    isGameScreenVisible,
+    setIsGameScreenVisible,
+  } = useGameStore();
 
   const searchParams = useSearchParams();
+  const name = searchParams.get("name");
   const roomCode = searchParams.get("code");
-  const name = searchParams.get("username");
-
   const [message, setMessage] = useState("");
 
   const chatRef = useRef<HTMLDivElement | null>(null);

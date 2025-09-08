@@ -19,7 +19,7 @@ export function HomePage() {
   const createRoom = () => {
     socket.emit("createRoom", { username }, (res: RoomResponse): void => {
       if (res.success) {
-        router.push(`/room?code=${res.roomCode}&username=${username}`);
+        router.push(`/room?code=${res.roomCode}&name=${username}`);
       } else {
         alert(res.message);
       }
@@ -30,7 +30,7 @@ export function HomePage() {
     socket.connect();
     socket.emit("joinRoom", { roomCode, username }, (res: RoomResponse): void => {
       if (res.success) {
-        router.push(`/room?code=${roomCode}&username=${username}`);
+        router.push(`/room?code=${roomCode}&name=${username}`);
       } else {
         alert(res.message);
       }
